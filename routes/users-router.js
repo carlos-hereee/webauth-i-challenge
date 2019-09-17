@@ -4,12 +4,12 @@ const bcrypt = require('bcryptjs');
 
 
 //import middleware
-const restricted = require('../auth/restricted-middleware.js')
+const protected = require('../auth/restricted-middleware.js')
 
 const router = express.Router();
 
 //get list of users, and pass
-router.get('/', (req, res) => {
+router.get('/', protected, (req, res) => {
   Users.find()
     .then(users => {
       res.json(users);
@@ -35,7 +35,7 @@ router.post('/register', (req, res) => {
       res.status(500).json(error);
     });
 });
-
+//
 router.post('/login', (req, res) => {
   let { username, password } = req.body;
 
@@ -51,6 +51,20 @@ router.post('/login', (req, res) => {
     .catch(error => {
       res.status(500).json(error);
     });
+});
+
+
+// loging out 
+router.get('/logout', (req, res) => {
+  if (req.session) {
+    req.session.destroy(err => {
+      if (err) {
+        res.send('error logging out');
+      } else {
+        res.send('good bye');
+      }
+    });
+  }
 });
 
 
